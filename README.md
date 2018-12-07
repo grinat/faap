@@ -7,7 +7,32 @@ Fast Api for Any Prototype
 
 [Open](https://faap-app.herokuapp.com)
 
+## Api Docs
+
+Local
+[http://localhost:3200/faap/v1/docs/swagger](http://localhost:3200/faap/v1/docs/swagger)
+
+Remote
+[https://faap-app.herokuapp.com/faap/v1/docs/swagger](https://faap-app.herokuapp.com/faap/v1/docs/swagger)
+
+
 ## Run
+### Docker image
+
+```
+docker run -d -p 3200:3200 --name faap --restart always grinat0/faap
+```
+
+With enable auth
+```
+docker run -d -p 3200:3200 -e "USE_INNER_AUTH=true" --name faap --restart always grinat0/faap
+```
+
+With you auth url (all headers was sent to that url by get response)
+```
+docker run -d -p 3200:3200 -e "CHECK_AUTH_URL=http://loc/check-auth.php" --name faap --restart always grinat0/faap
+```
+
 ### Dev
 
 ```
