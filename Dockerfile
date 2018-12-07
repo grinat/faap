@@ -17,6 +17,9 @@ RUN apt-get purge --auto-remove -y \
 COPY ./ /home/faap
 RUN chmod +x /home/faap/docker/supervisord/entrypoint.sh
 
+# install npm depencies
+RUN cd /home/faap && npm i
+
 ENV MONGO_URL="mongodb://localhost:27017/faap"
 
 EXPOSE 3200

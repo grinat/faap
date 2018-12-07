@@ -2,6 +2,4 @@
 
 cd /home/faap
 
-npm i
-
 npm run start
