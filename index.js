@@ -11,6 +11,10 @@ const swaggerDocument = YAML.load('./docs/api.swagger.yaml')
 swaggerDocument.info.version = pkg.version
 swaggerDocument.info.title = pkg.name
 swaggerDocument.info.description = pkg.description
+if (process.env.HEROKU_APP_NAME) {
+  // set https scheme as default
+  swaggerDocument.schemes.unshift('https')
+}
 const SWAGGER_UI_ENDPOINT = '/faap/v1/docs/swagger'
 
 const config = require('./config')

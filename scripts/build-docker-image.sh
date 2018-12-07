@@ -6,8 +6,7 @@ docker build -t faap . --no-cache
 
 docker ps -a
 
-# docker login --username $DOCKER_U --password $DOCKER_P
-DOCKER_U='grinat0'
+docker login --username $DOCKER_U --password $DOCKER_P
 
 docker tag faap $DOCKER_U/faap:latest
 docker tag faap $DOCKER_U/faap:release-$VERSION
