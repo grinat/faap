@@ -1,0 +1,21 @@
+version: '2'
+services:
+  mongo.faap:
+    container_name: faap-mongo-dev
+    image: mongo:4.0.4-xenial
+    ports:
+    - 3201:27017
+    volumes:
+      - faap-mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=
+      - MONGO_INITDB_ROOT_PASSWORD=
+    networks:
+      - faap-network
+
+networks:
+  faap-network:
+
+volumes:
+  faap-mongo-data:
+    external: true

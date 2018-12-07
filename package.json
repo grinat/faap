@@ -1,0 +1,43 @@
+{
+  "name": "faap",
+  "description": "Fast Api for Any Prototype",
+  "version": "0.0.1",
+  "author": "Gabdrashitov Rinat <paladin2012gnu@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grinat/faap/issues"
+  },
+  "homepage": "https://github.com/grinat/faap#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grinat/faap.git"
+  },
+  "scripts": {
+    "dev": "nodemon --watch index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "test": "cross-env NODE_ENV=testing mocha --timeout 10000",
+    "test-inner-auth-enabled": "cross-env NODE_ENV.USE_INNER_AUTH=true npm run test",
+    "test-inner-auth-disabled": "cross-env NODE_ENV.USE_INNER_AUTH=false npm run test"
+  },
+  "dependencies": {
+    "axios": "^0.17.1",
+    "cors": "^2.8.4",
+    "cross-env": "^5.1.4",
+    "express": "^4.14.0",
+    "md5": "^2.2.1",
+    "mongodb": "^2.2.22",
+    "swagger-ui-express": "^4.0.1",
+    "uuid": "^3.3.2",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.4"
+  },
+  "engines": {
+    "node": ">= 8.0.0",
+    "npm": ">= 4.0.0"
+  }
+}

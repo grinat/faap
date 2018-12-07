@@ -1,0 +1,489 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "0.0.0"
+  title: ""
+basePath: "/faap/v1/"
+tags:
+- name: "collection"
+  description: "Mongodb operations"
+- name: "user"
+  description: "Inner auth, used if USE_INNER_AUTH option set to true"
+schemes:
+- "http"
+- "https"
+paths:
+  /{collection}:
+    post:
+      tags:
+      - "collection"
+      summary: "Insert data to collection"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "collection"
+        in: "path"
+        required: true
+        description: "Name of collection"
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Data that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/DataToSave"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/SavedData"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+    get:
+      tags:
+      - "collection"
+      summary: "Get saved data's from collection as list"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "collection"
+        in: "path"
+        required: true
+        description: "Name of collection"
+        type: "string"
+      - name: "sort"
+        in: "query"
+        description: "Sorted field name, -fieldName descending, fieldName ascending"
+        type: "string"
+      - name: "per-page"
+        in: "query"
+        description: "items on page"
+        type: "string"
+      - name: "page"
+        in: "query"
+        description: "pagination page"
+        type: "string"
+      - name: "q"
+        in: "query"
+        description: "insensitive search in searchBody field"
+        type: "string"
+      - name: "filter"
+        in: "query"
+        type: "string"
+        description: "See filter model"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/SavedDatas"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+  /{collection}/{id}:
+    patch:
+      tags:
+      - "collection"
+      summary: "Update data in collection"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "collection"
+        in: "path"
+        required: true
+        description: "Name of collection"
+        type: "string"
+      - name: "id"
+        in: "path"
+        required: true
+        description: "Id of data"
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Data that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/DataToSave"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/SavedData"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - "collection"
+      summary: "Delete data in collection"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "collection"
+        in: "path"
+        required: true
+        description: "Name of collection"
+        type: "string"
+      - name: "id"
+        in: "path"
+        required: true
+        description: "Id of data"
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+    get:
+      tags:
+      - "collection"
+      summary: "Get data from collection"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "collection"
+        in: "path"
+        required: true
+        description: "Name of collection"
+        type: "string"
+      - name: "id"
+        in: "path"
+        required: true
+        description: "Id of data"
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/SavedData"
+        404:
+          description: "Not found"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+  /user/register:
+    post:
+      tags:
+      - "user"
+      summary: "Create new user"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/UserReg"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/User"
+        422:
+          description: "Wrong Validation"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /user/login:
+    post:
+      tags:
+      - "user"
+      summary: "Login"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/UserAuth"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/User"
+        422:
+          description: "Wrong login or pass"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /user/{id}:
+    patch:
+      tags:
+      - "user"
+      summary: "Update user profile"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: "Id of user"
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/UserEdit"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/User"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+    get:
+      tags:
+      - "user"
+      summary: "View user profile"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: "Id of user"
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/User"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+  /user:
+    get:
+      tags:
+      - "user"
+      summary: "Get saved data's from user as list"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "sort"
+        in: "query"
+        description: "Sorted field name, -fieldName descending, fieldName ascending"
+        type: "string"
+      - name: "per-page"
+        in: "query"
+        description: "items on page"
+        type: "string"
+      - name: "page"
+        in: "query"
+        description: "pagination page"
+        type: "string"
+      - name: "q"
+        in: "query"
+        description: "insensitive search in searchBody field"
+        type: "string"
+      - name: "filter"
+        in: "query"
+        type: "string"
+        description: "See filter model"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/SavedDatas"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+
+
+definitions:
+  DataToSave:
+    type: "object"
+    properties:
+      any:
+        description: "Any saved field or fields"
+        type: "string"
+  SavedData:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      _id:
+        type: "string"
+      searchBody:
+        description: "Data for fulltext search"
+        type: "string"
+      any:
+        description: "Any saved field or fields"
+        type: "string"
+  SavedDatas:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/SavedData"
+      _meta:
+        type: "object"
+      _links:
+        type: "object"
+  Filter:
+    type: "object"
+    properties:
+      _fieldName:
+        type: "string"
+        description: "field name started of _ dont used in search"
+      from_fieldName:
+        type: "string"
+        description: "search from"
+      to_fieldName:
+        type: "string"
+        description: "search to"
+      fieldName:
+        type: "string"
+        description: "filter by value"
+  Error:
+    type: "object"
+    properties:
+      status:
+        type: "integer"
+      message:
+        type: "string"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      _id:
+        type: "string"
+      login:
+        type: "string"
+      password:
+        type: "string"
+      token:
+        type: "string"
+      any:
+        description: "Any saved field or fields"
+        type: "string"
+  UserAuth:
+    type: "object"
+    properties:
+      login:
+        type: "string"
+      password:
+        type: "string"
+  UserReg:
+    type: "object"
+    properties:
+      login:
+        type: "string"
+      password:
+        type: "string"
+      any:
+        description: "Any field or fields needed to store"
+        type: "string"
+  UserEdit:
+    type: "object"
+    properties:
+      password:
+        description: "If send, token and passhash was changed"
+        type: "string"
+      any:
+        description: "Any field or fields needed to store"
+        type: "string"

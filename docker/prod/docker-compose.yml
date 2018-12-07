@@ -1,0 +1,33 @@
+version: '2'
+services:
+  node.faap:
+    restart: always
+    container_name: faap-node-prod
+    image: node:9-alpine
+    ports:
+      - 3200:3200
+    environment:
+      - MONGO_URL=mongodb://mongo.faap:27017/faap
+    volumes:
+      - ../../:/home/faap
+    networks:
+      - faap-network
+    command: sh -c "cd /home/faap && npm i && npm run start"
+  mongo.faap:
+    restart: always
+    container_name: faap-mongo-prod
+    image: mongo:4.0.4-xenial
+    volumes:
+      - faap-mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=
+      - MONGO_INITDB_ROOT_PASSWORD=
+    networks:
+      - faap-network
+
+networks:
+  faap-network:
+
+volumes:
+  faap-mongo-data:
+    external: true

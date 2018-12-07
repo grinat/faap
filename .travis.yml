@@ -1,0 +1,15 @@
+sudo: required
+
+jobs:
+  include:
+  - stage: Testing
+    script:
+    - sh ./scripts/run-test-in-docker.sh || travis_terminate 1
+  - stage: Build image
+    script:
+    - apt-get install jq -y
+    - sh ./scripts/build-docker-image.sh || travis_terminate 1
+
+branches:
+  only:
+  - master
