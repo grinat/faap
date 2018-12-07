@@ -1,4 +1,5 @@
 # faap
+[![Travis CI status](https://api.travis-ci.org/grinat/faap.svg?branch=master)](https://travis-ci.org/grinat/faap)
 
 Fast Api for Any Prototype
 
