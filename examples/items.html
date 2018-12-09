@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Items</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/bulma-utilities@0.3.1/css/bulma-utilities.css">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/3.2.89/css/materialdesignicons.min.css">
+</head>
+
+<body>
+<div id="app">
+  <main>
+    <section class="hero is-warning">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Add new
+            <span
+              v-if="collectionOpenForEdit===false"
+              @click.stop.prevent="collectionOpenForEdit=true"
+            >
+              {{collection}}
+              <button
+                class="button is-link"
+              >
+                <b-icon icon="pencil"></b-icon>
+              </button>
+            </span>
+            <span
+              v-else
+              @submit.prevent="saveCollectionForm()"
+            >
+              <form class="is-inline">
+                <input
+                  type="text"
+                  v-model="collectionForm.name"
+                  class="input is-inline"
+                  required
+                  minlength="1"
+                >
+                <button
+                  type="submit"
+                  class="button is-link"
+                >
+                  <b-icon icon="pencil"></b-icon>
+                </button>
+                <button
+                  @click.stop.prevent="collectionOpenForEdit=false"
+                  class="button is-link"
+                >
+                  <b-icon icon="close"></b-icon>
+                </button>
+              </form>
+            </span>
+          </h1>
+          <form @submit.prevent="saveItem()">
+            <div class="columns">
+              <div class="column">
+                <b-field label="First name">
+                  <b-input
+                    v-model="item.first_name"
+                    required
+                    minlength="1"
+                  ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Gender">
+                  <b-select
+                    v-model="item.gender"
+                    placeholder="Select a gender"
+                    required
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column">
+                <b-field label="Age">
+                  <b-input
+                    type="number"
+                    v-model="item.age"
+                    required
+                    minlength="1"
+                  ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field class="file">
+                  <figure class="media-left">
+                    <p class="image is-64x64">
+                      <img :src="item.photo || userPhotoDefault">
+                    </p>
+                  </figure>
+                  <label class="file-label">
+                    <input
+                      class="file-input"
+                      type="file"
+                      required
+                      @input="processImage"
+                      accept="image/*"
+                    >
+                    <span class="file-cta">
+                      <b-icon icon="upload"></b-icon>
+                      <span class="file-label">
+                        Choose image
+                      </span>
+                    </span>
+                  </label>
+                </b-field>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column">
+                <b-field
+                  v-for="cF, i in customFields"
+                  v-if="i % 2 == 0"
+                  :key="i"
+                  :label="cF.title"
+                >
+                  <b-input
+                    v-model="item[cF.name]"
+                  ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field
+                  v-for="cF, i in customFields"
+                  v-if="i % 2 != 0"
+                  :key="i"
+                  :label="cF.title"
+                >
+                  <b-input
+                    v-model="item[cF.name]"
+                  ></b-input>
+                </b-field>
+              </div>
+            </div>
+            <div class="field is-grouped">
+              <div class="control">
+                <button
+                  type="submit"
+                  class="button is-link"
+                  :disabled="saving"
+                >{{saving ? 'Saving' : 'Save'}}</button>
+              </div>
+              <div class="control">
+                <button
+                  class="button is-link"
+                  @click.stop.prevent="showCustomFieldForm=!showCustomFieldForm"
+                >Add custom field</button>
+              </div>
+            </div>
+          </form>
+          <form @submit.prevent="saveCustomFieldForm()">
+            <div
+              class="columns has-margin-t-5"
+              v-show="showCustomFieldForm"
+            >
+              <div class="column">
+                <b-field label="Title">
+                  <b-input
+                    v-model="customFieldForm.title"
+                    required
+                    minlength="1"
+                  ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Name">
+                  <b-input
+                    v-model="customFieldForm.name"
+                    required
+                    minlength="1"
+                  ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <label class="label">&nbsp;</label>
+                <div class="control">
+                  <button
+                    class="button is-link"
+                    type="submit"
+                  >Save custom field</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            {{collection.charAt(0).toUpperCase() + collection.slice(1)}}s
+            <div class="is-pulled-right">
+              <b-field class="is-inline has-text-weight-normal">
+                <b-checkbox-button
+                  v-model="filterForm.checkboxGroup"
+                  native-value="gender=Female"
+                  type="is-success"
+                  @input="onFilter()"
+                >
+                  <b-icon icon="human-female"></b-icon>
+                  Only womans
+                </b-checkbox-button>
+              </b-field>
+
+              <b-field class="is-inline has-text-weight-normal">
+                <b-checkbox-button
+                  v-model="filterForm.checkboxGroup"
+                  native-value="from_age=20"
+                  type="is-success"
+                  @input="onFilter()"
+                >
+                  Age > 20
+                </b-checkbox-button>
+              </b-field>
+
+              <b-field class="is-inline has-text-weight-normal">
+                <b-checkbox-button
+                  v-model="filterForm.checkboxGroup"
+                  native-value="to_age=40"
+                  type="is-success"
+                  @input="onFilter()"
+                >
+                  Age < 40
+                </b-checkbox-button>
+              </b-field>
+
+              <input
+                v-model="filterForm.q"
+                @keyup.enter="onFilter()"
+                class="input is-inline"
+                type="text"
+                placeholder="Search..."
+              >
+            </div>
+          </h1>
+          <h2 class="subtitle">
+            Showed {{data.length}} of {{total}}
+          </h2>
+          <b-table
+            :data="data"
+            :loading="loading"
+
+            paginated
+            backend-pagination
+            :total="total"
+            :per-page="perPage"
+            @page-change="pageChange"
+
+            backend-sorting
+            :default-sort-direction="defaultSortOrder"
+            :default-sort="[sortField, sortOrder]"
+            @sort="sort"
+
+            :opened-detailed="openedDetailed"
+            detailed
+            detail-key="id"
+          >
+
+            <template slot-scope="props">
+              <b-table-column field="id" label="ID" width="40" sortable>
+                {{ props.row.id }}
+              </b-table-column>
+
+              <b-table-column field="first_name" label="First Name" sortable>
+                {{ props.row.first_name }}
+              </b-table-column>
+
+              <b-table-column field="age" label="Age" sortable centered>
+                <span class="tag is-success">
+                  {{ props.row.age }}
+                </span>
+              </b-table-column>
+
+              <b-table-column field="gender" label="Gender" sortable>
+                <b-icon
+                  :icon="props.row.gender === 'Male' ? 'human-male' : 'human-female'">
+                </b-icon>
+                {{ props.row.gender }}
+              </b-table-column>
+              <b-table-column label="Actions">
+                <button
+                  class="button is-link"
+                  @click.stop="onRemove(props.row)"
+                >
+                  <b-icon icon="delete"></b-icon>
+                </button>
+              </b-table-column>
+            </template>
+
+            <template slot="detail" slot-scope="props">
+              <article class="media">
+                <figure class="media-left">
+                  <p class="image is-64x64">
+                    <img :src="props.row.photo || userPhotoDefault">
+                  </p>
+                </figure>
+                <div class="media-content">
+                  <div class="content">
+                    <p
+                      v-for="fV, fN in props.row"
+                      :key="fN"
+                    >
+                      <strong>{{fN}}</strong>
+                      <code>{{fV}}</code>
+                    </p>
+                  </div>
+                </div>
+              </article>
+            </template>
+          </b-table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<script src="https://unpkg.com/browser-image-manipulation/dist/browser-image-manipulation.js"></script>
+
+<script src="items.js"></script>
+
+<style>
+  .is-inline .control{
+    display: inline;
+  }
+  .file-label {
+    align-items: flex-end;
+  }
+</style>
+</body>
+</html>

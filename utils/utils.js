@@ -98,7 +98,7 @@ const utils = {
   },
   typeReduction: function (val) {
     if (isNaN(val)) {
-      return val
+      return val.toString()
     }
     return +val
   },
