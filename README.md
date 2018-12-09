@@ -3,11 +3,15 @@
 
 Fast Api for Any Prototype
 
+Allows via rest api add, edit, sort, filter any arbitrary data sets. What is convenient when creating demos and prototypes, since there is no need to write server api, models, migrations, etc.
+
+There is a built-in authorization by token, or you can connect to an existing one.
+
 ## Example
 
-[Open](https://faap-app.herokuapp.com)
+[Example app](https://grinat.github.io/faap/examples/items.html)
 
-## Api Docs
+## Swagger Api Docs
 
 Local
 [http://localhost:3200/faap/v1/docs/swagger](http://localhost:3200/faap/v1/docs/swagger)
@@ -51,7 +55,7 @@ Docker compose
 cd docker/prod && docker-compose up
 ```
 
-Docker file
+Or build docker file and run
 
 ```
 docker run -p 3200:3200 faap
@@ -75,7 +79,7 @@ cd docker/test && docker-compose up --abort-on-container-exit
 Local (need running db)
 
 ```
-npn run-test
+npm run-test
 ```
 
 ## Heroku
@@ -91,5 +95,5 @@ heroku labs:enable runtime-dyno-metadata -a you_app_name
 heroku config:set MONGO_URL="mongodb://user:pass@host:port/dbname" -a you_app_name
 ```
 6. Set other configs if need via enviroment avalibled in config.js
-7. ...
+7. ???
 8. Profit!
