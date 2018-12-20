@@ -7,7 +7,7 @@ const pkg = require('./package')
 
 const swaggerUi = require('swagger-ui-express')
 const YAML = require('yamljs')
-const swaggerDocument = YAML.load('./docs/api.swagger.yaml')
+const swaggerDocument = YAML.load(__dirname + '/docs/api.swagger.yaml')
 swaggerDocument.info.version = pkg.version
 swaggerDocument.info.title = pkg.name
 swaggerDocument.info.description = pkg.description
@@ -28,6 +28,7 @@ module.exports = function (opts) {
 
   swaggerDocument.basePath = config.BASE_API_PATH
   router.use(config.BASE_API_PATH + 'docs/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+  console.log(`faap v${pkg.version} swagger ui path: ${config.BASE_API_PATH}docs/swagger`)
 
   router.post(config.BASE_API_PATH + 'user/register', jsonParser, utils.passRouterFuncParams(user.register, {config}))
   router.post(config.BASE_API_PATH + 'user/login', jsonParser, utils.passRouterFuncParams(user.login, {config}))
