@@ -37,6 +37,15 @@ With you auth url (all headers was sent to that url by get response)
 docker run -d -p 3200:3200 -e "CHECK_AUTH_URL=http://loc/check-auth.php" --name faap --restart always grinat0/faap
 ```
 
+### Express extension
+```
+const faap = require('faap')
+
+// see avalaibled options in config.js
+const config = {}
+app.use(faap(config))
+```
+
 ### Dev
 
 ```
