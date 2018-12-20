@@ -1,7 +1,6 @@
 const mongoClient = require('mongodb').MongoClient
 const objectId = require('mongodb').ObjectID
 
-const config = require('../config')
 const utils = require('../utils/utils')
 const main = require('./main')
 const transformers = require('../utils/transformers')
@@ -9,7 +8,7 @@ const HandledError = require('../models/HandledError')
 const user = require('./user')
 
 const collection = {
-  create: async function (req, res) {
+  create: async function (req, res, {config}) {
     const {collection} = req.params
     let db = null
     try {
@@ -25,11 +24,11 @@ const collection = {
         data.id = data._id
       }
       db = await mongoClient.connect(config.MONGO_URL)
-      await user.checkAuth(db, req)
+      await user.checkAuth(db, req, {config})
       await db.collection(collection).insertOne(data, {
         forceServerObjectId: true
       })
-      console.debug('Created item with id', data._id.toString())
+      config.SHOW_DEBUG_MSG && console.debug('Created item with id', data._id.toString())
       res.status(201).send(
         transformers.transformItem(data, collection, req)
       )
@@ -39,7 +38,7 @@ const collection = {
       db && db.close()
     }
   },
-  update: async function (req, res) {
+  update: async function (req, res, {config}) {
     const {collection, id} = req.params
     let db = null
     try {
@@ -47,7 +46,7 @@ const collection = {
       delete data._id
       delete data.id
       db = await mongoClient.connect(config.MONGO_URL)
-      await user.checkAuth(db, req)
+      await user.checkAuth(db, req, {config})
       const item = await db.collection(collection).findOne({
         _id: objectId(id)
       })
@@ -59,7 +58,7 @@ const collection = {
         {$set: data},
         {returnOriginal: false}
       )
-      console.debug('Updated item with id', update.value._id.toString())
+      config.SHOW_DEBUG_MSG && console.debug('Updated item with id', update.value._id.toString())
       res.send(
         transformers.transformItem(update.value, collection, req)
       )
@@ -69,12 +68,12 @@ const collection = {
       db && db.close()
     }
   },
-  delete: async function (req, res) {
+  delete: async function (req, res, {config}) {
     const {collection, id} = req.params
     let db = null
     try {
       db = await mongoClient.connect(config.MONGO_URL)
-      await user.checkAuth(db, req)
+      await user.checkAuth(db, req, {config})
       const item = await db.collection(collection).findOne({
         _id: objectId(id)
       })
@@ -84,7 +83,7 @@ const collection = {
       await db.collection(collection).findOneAndDelete({
         _id: objectId(id)
       })
-      console.debug('Deleted item with id', id)
+      config.SHOW_DEBUG_MSG && console.debug('Deleted item with id', id)
       res.status(204).end()
     } catch (e) {
       main.handleError(e, res, req)
@@ -92,13 +91,13 @@ const collection = {
       db && db.close()
     }
   },
-  viewItems: async function (req, res) {
+  viewItems: async function (req, res, {config}) {
     const {collection} = req.params
     let {sort, mongoSort} = utils.getSort(req.query)
     let db = null
     try {
       db = await mongoClient.connect(config.MONGO_URL)
-      await user.checkAuth(db, req)
+      await user.checkAuth(db, req, {config})
       const findQ = utils.buildSearchObject(collection, req.query)
       let count = await db.collection(collection)
         .find(findQ)
@@ -123,12 +122,12 @@ const collection = {
       db && db.close()
     }
   },
-  viewItem: async function (req, res) {
+  viewItem: async function (req, res, {config}) {
     const {collection, id} = req.params
     let db = null
     try {
       db = await mongoClient.connect(config.MONGO_URL)
-      await user.checkAuth(db, req)
+      await user.checkAuth(db, req, {config})
       const item = await db.collection(collection).findOne({
         _id: objectId(id)
       })

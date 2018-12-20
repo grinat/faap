@@ -107,6 +107,11 @@ const utils = {
   },
   getPassHashByPass: function (password) {
     return md5(config.SALT + password.toString().trim())
+  },
+  passRouterFuncParams: function (func, options) {
+    return async function (req, res) {
+      await func(req, res, options)
+    }
   }
 }
 

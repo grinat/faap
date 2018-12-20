@@ -2,7 +2,6 @@ const mongoClient = require('mongodb').MongoClient
 const objectId = require('mongodb').ObjectID
 const axios = require('axios')
 
-const config = require('../config')
 const main = require('./main')
 const utils = require('../utils/utils')
 const transformers = require('../utils/transformers')
@@ -25,7 +24,7 @@ const user = {
     }
     return key
   },
-  checkAuth: async function (db, req) {
+  checkAuth: async function (db, req, {config}) {
     if (config.USE_INNER_AUTH) {
       const item = await db.collection(collection).findOne({
         token: user.getAuthKey(req).toString().trim()
@@ -40,7 +39,7 @@ const user = {
       })
     }
   },
-  register: async function (req, res) {
+  register: async function (req, res, {config}) {
     let db = null
     try {
       const data = req.body || {}
@@ -64,7 +63,7 @@ const user = {
       await db.collection(collection).insertOne(data, {
         forceServerObjectId: true
       })
-      console.debug('Created user with id', data._id.toString())
+      config.SHOW_DEBUG_MSG && console.debug('Created user with id', data._id.toString())
       res.status(201).send(
         transformers.transformItem(data, collection, req)
       )
@@ -74,7 +73,7 @@ const user = {
       db && db.close()
     }
   },
-  login: async function (req, res) {
+  login: async function (req, res, {config}) {
     let db = null
     try {
       const data = req.body || {}
@@ -97,7 +96,7 @@ const user = {
       db && db.close()
     }
   },
-  update:  async function (req, res) {
+  update:  async function (req, res, {config}) {
     const {id} = req.params
     let db = null
     try {
@@ -108,7 +107,7 @@ const user = {
       delete data.passHash
       delete data.login
       db = await mongoClient.connect(config.MONGO_URL)
-      const auth = await user.checkAuth(db, req)
+      const auth = await user.checkAuth(db, req, {config})
       const item = await db.collection(collection).findOne({
         _id: objectId(id)
       })
@@ -131,7 +130,7 @@ const user = {
         {$set: data},
         {returnOriginal: false}
       )
-      console.debug('Updated item with id', update.value._id.toString())
+      config.SHOW_DEBUG_MSG && console.debug('Updated item with id', update.value._id.toString())
       res.send(
         transformers.transformItem(update.value, collection, req)
       )
@@ -141,12 +140,12 @@ const user = {
       db && db.close()
     }
   },
-  view: async function (req, res) {
+  view: async function (req, res, {config}) {
     const {id} = req.params
     let db = null
     try {
       db = await mongoClient.connect(config.MONGO_URL)
-      const auth = await user.checkAuth(db, req)
+      const auth = await user.checkAuth(db, req, {config})
       const item = await db.collection(collection).findOne({
         _id: objectId(id)
       })
@@ -166,12 +165,12 @@ const user = {
       db && db.close()
     }
   },
-  list: async function (req, res) {
+  list: async function (req, res, {config}) {
     let db = null
     let {sort, mongoSort} = utils.getSort(req.query)
     try {
       db = await mongoClient.connect(config.MONGO_URL)
-      await user.checkAuth(db, req)
+      await user.checkAuth(db, req, {config})
       const findQ = utils.buildSearchObject(collection, req.query)
       let count = await db.collection(collection)
         .find(findQ)

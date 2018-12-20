@@ -25,11 +25,11 @@ let app = null
 
 describe('Collection', () => {
   before(async () => {
-    app = require('../index')
+    app = require('../server')
   })
 
   after(async () => {
-    require('../index').server.close()
+    require('../server').server.close()
   })
 
   config.USE_INNER_AUTH && describe('User', () => {
