@@ -1,0 +1,44 @@
+const mongoClient = require('mongodb').MongoClient
+
+const Auth = require('../models/Auth')
+const main = require('../handlers/main')
+
+const decorators = {
+  injectParamsForHandlers: function (func, options) {
+    return async function (req, res) {
+      const {config} = options
+      let db = null
+
+      // get db connection
+      try {
+        db = await mongoClient.connect(config.MONGO_URL)
+      } catch (e) {
+        main.handleError(e, res, req)
+        return
+      }
+
+      // create auth instance
+      const auth = new Auth({config, db, req})
+
+      // execute handler
+      try {
+        await func(req, res, {config, auth, db})
+      } catch (e) {
+        main.handleError(e, res, req)
+      } finally {
+        db.close()
+      }
+    }
+  },
+  /**
+   * @param {Object} obj
+   * @returns {Object}
+   */
+  readOnlyObj: function (obj) {
+    return (function (input) {
+      return Object.freeze(input)
+    })(obj)
+  }
+}
+
+module.exports = decorators

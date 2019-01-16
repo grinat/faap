@@ -1,7 +1,5 @@
 const md5 = require('md5')
 
-const config = require('../config')
-
 const utils = {
   getSort: function (query = {}) {
     let sort = query.sort || 'id'
@@ -105,13 +103,8 @@ const utils = {
   getGeneratedToken: function () {
     return md5(+new Date() + Math.random())
   },
-  getPassHashByPass: function (password) {
-    return md5(config.SALT + password.toString().trim())
-  },
-  passRouterFuncParams: function (func, options) {
-    return async function (req, res) {
-      await func(req, res, options)
-    }
+  getPassHashByPass: function (password, salt = '') {
+    return md5(salt + password.toString().trim())
   }
 }
 

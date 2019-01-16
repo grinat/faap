@@ -13,7 +13,8 @@
     "url": "git+https://github.com/grinat/faap.git"
   },
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "cross-env NODE_ENV.ENABLE_SWAGGER_UI=true nodemon server.js",
+    "dev-inner-auth-enabled": "cross-env NODE_ENV.USE_INNER_AUTH=true npm dev",
     "start": "cross-env NODE_ENV=production node server.js",
     "test": "cross-env NODE_ENV=testing mocha --timeout 10000",
     "test-inner-auth-enabled": "cross-env NODE_ENV.USE_INNER_AUTH=true npm run test",

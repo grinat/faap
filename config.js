@@ -6,5 +6,6 @@ module.exports = {
   SALT: 'w@N:X+nG Fhu!N~PW|>,Wyl1M8)4[&so1-=&Pd8aO+wkIn;,:;gi4n<+aZGH-|.Q',
   BODY_SIZE_LIMIT: process.env.BODY_SIZE_LIMIT || '4mb',
   BASE_API_PATH: process.env.BASE_API_PATH || '/faap/v1/',
-  SHOW_DEBUG_MSG: process.env.SHOW_DEBUG_MSG === "true" || true
+  SHOW_DEBUG_MSG: process.env.SHOW_DEBUG_MSG === "true" || true,
+  ENABLE_SWAGGER_UI: process.env.ENABLE_SWAGGER_UI === "true",
 }
