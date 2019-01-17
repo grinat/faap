@@ -21,7 +21,7 @@ Remote
 
 
 ## Run
-### Express[![DeepScan grade](https://deepscan.io/api/teams/2754/projects/4053/branches/34040/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=2754&pid=4053&bid=34040) extension
+### Express extension
 ```
 const faap = require('faap')
 
