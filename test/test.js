@@ -22,14 +22,16 @@ const itemDb = 'book'
 let createdId = null
 
 let app = null
+let server = null
 
-describe('Collection', () => {
+describe('Test user(if avalaible) and collection', () => {
   before(async () => {
     app = require('../server')
+    server = require('../server').initAndRun(config)
   })
 
   after(async () => {
-    require('../server').server.close()
+    server.close()
   })
 
   config.USE_INNER_AUTH && describe('User', () => {

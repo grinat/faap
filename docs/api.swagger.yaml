@@ -9,9 +9,6 @@ tags:
   description: "Mongodb operations"
 - name: "user"
   description: "Inner auth, used if USE_INNER_AUTH option set to true"
-schemes:
-- "http"
-- "https"
 paths:
   /{collection}:
     post:

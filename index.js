@@ -3,47 +3,50 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const router = express.Router()
 
-const pkg = require('./package')
-
-const swaggerUi = require('swagger-ui-express')
-const YAML = require('yamljs')
-const swaggerDocument = YAML.load(__dirname + '/docs/api.swagger.yaml')
-swaggerDocument.info.version = pkg.version
-swaggerDocument.info.title = pkg.name
-swaggerDocument.info.description = pkg.description
-if (process.env.HEROKU_APP_NAME) {
-  // set https scheme as default
-  swaggerDocument.schemes.unshift('https')
-}
-
 const defaultConfig = require('./config')
 const collection = require('./handlers/collection')
 const user = require('./handlers/user')
-const utils = require('./utils/utils')
+const decorators = require('./utils/decorators')
 
-module.exports = function (opts) {
-  const config = Object.assign({}, defaultConfig, opts)
+/**
+ * @param {defaultConfig} opts - see config.js for details
+ * @param {Object} callbacks - object with promises functions:
+ * getDB(config) - must return mongodb or reject err
+ * checkIdentify(request, config, db) - reject err on auth failed
+ * @returns {Router} router
+ */
+module.exports = function (opts = {}, callbacks = {}) {
+  /** @alias {defaultConfig} */
+  const config = decorators.readOnlyObj(Object.assign({}, defaultConfig, opts))
+
   router.use(cors({origin: '*'}))
   const jsonParser = bodyParser.json({limit: config.BODY_SIZE_LIMIT})
 
-  swaggerDocument.basePath = config.BASE_API_PATH
-  router.use(config.BASE_API_PATH + 'docs/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-  console.log(`faap v${pkg.version} swagger ui path: ${config.BASE_API_PATH}docs/swagger`)
+  // swagger ui
+  if (config.ENABLE_SWAGGER_UI === true) {
+    require('./utils/initSwaggerUi')(config, router)
+  }
 
-  router.post(config.BASE_API_PATH + 'user/register', jsonParser, utils.passRouterFuncParams(user.register, {config}))
-  router.post(config.BASE_API_PATH + 'user/login', jsonParser, utils.passRouterFuncParams(user.login, {config}))
-  router.patch(config.BASE_API_PATH + 'user/:id', jsonParser, utils.passRouterFuncParams(user.update, {config}))
-  router.put(config.BASE_API_PATH + 'user/:id', jsonParser, utils.passRouterFuncParams(user.update, {config}))
-  router.delete(config.BASE_API_PATH + 'user/:id', jsonParser, utils.passRouterFuncParams(user.delete, {config}))
-  router.get(config.BASE_API_PATH + 'user/:id', jsonParser, utils.passRouterFuncParams(user.view, {config}))
-  router.get(config.BASE_API_PATH + 'user', jsonParser, utils.passRouterFuncParams(user.list, {config}))
+  const params = {config, callbacks}
 
-  router.post(config.BASE_API_PATH + ':collection', jsonParser, utils.passRouterFuncParams(collection.create, {config}))
-  router.patch(config.BASE_API_PATH + ':collection/:id', jsonParser, utils.passRouterFuncParams(collection.update, {config}))
-  router.put(config.BASE_API_PATH + ':collection/:id', jsonParser, utils.passRouterFuncParams(collection.update, {config}))
-  router.delete(config.BASE_API_PATH + ':collection/:id', utils.passRouterFuncParams(collection.delete, {config}))
-  router.get(config.BASE_API_PATH + ':collection', utils.passRouterFuncParams(collection.viewItems, {config}))
-  router.get(config.BASE_API_PATH + ':collection/:id', utils.passRouterFuncParams(collection.viewItem, {config}))
+  // user routes
+  if (config.USE_INNER_AUTH === true) {
+    router.post(config.BASE_API_PATH + 'user/register', jsonParser, decorators.injectParamsForHandlers(user.register, params))
+    router.post(config.BASE_API_PATH + 'user/login', jsonParser, decorators.injectParamsForHandlers(user.login, params))
+    router.patch(config.BASE_API_PATH + 'user/:id', jsonParser, decorators.injectParamsForHandlers(user.update, params))
+    router.put(config.BASE_API_PATH + 'user/:id', jsonParser, decorators.injectParamsForHandlers(user.update, params))
+    router.delete(config.BASE_API_PATH + 'user/:id', jsonParser, decorators.injectParamsForHandlers(user.delete, params))
+    router.get(config.BASE_API_PATH + 'user/:id', jsonParser, decorators.injectParamsForHandlers(user.view, params))
+    router.get(config.BASE_API_PATH + 'user', jsonParser, decorators.injectParamsForHandlers(user.list, params))
+  }
+
+  // collection
+  router.post(config.BASE_API_PATH + ':collection', jsonParser, decorators.injectParamsForHandlers(collection.create, params))
+  router.patch(config.BASE_API_PATH + ':collection/:id', jsonParser, decorators.injectParamsForHandlers(collection.update, params))
+  router.put(config.BASE_API_PATH + ':collection/:id', jsonParser, decorators.injectParamsForHandlers(collection.update, params))
+  router.delete(config.BASE_API_PATH + ':collection/:id', decorators.injectParamsForHandlers(collection.delete, params))
+  router.get(config.BASE_API_PATH + ':collection', decorators.injectParamsForHandlers(collection.viewItems, params))
+  router.get(config.BASE_API_PATH + ':collection/:id', decorators.injectParamsForHandlers(collection.viewItem, params))
 
   return router
 }
