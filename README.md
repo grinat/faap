@@ -21,6 +21,42 @@ Remote
 
 
 ## Run
+### Express[![DeepScan grade](https://deepscan.io/api/teams/2754/projects/4053/branches/34040/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=2754&pid=4053&bid=34040) extension
+```
+const faap = require('faap')
+
+// optional, see avalaibled options in config.js
+const config = {}
+
+// optional, set you auth and db
+const callbacks = {
+  getDB: async (config) => await mongoClient.connect(mongoUrl),
+  checkIdentify: async (request, config, db) => isLogged ? true : Promise.reject(new Error('Not authorized'))
+}
+
+app.use(faap(config, callbacks))
+```
+
+## Heroku
+1. Create new app
+2. Fork repo and add to app
+3. Enable metadata support:
+```
+heroku labs:enable runtime-dyno-metadata -a you_app_name
+```
+4. Get free mongodb on https://mlab.com/ and create new db or set you mongo url
+5. Set db config:
+```
+heroku config:set MONGO_URL="mongodb://user:pass@host:port/dbname" -a you_app_name
+```
+6. Set other configs if need via enviroment avalibled in config.js
+```
+// enabling swager ui
+heroku config:set ENABLE_SWAGGER_UI=true -a you_app_name
+```
+7. ???
+8. Profit!
+
 ### Docker image
 
 ```
@@ -35,15 +71,6 @@ docker run -d -p 3200:3200 -e "USE_INNER_AUTH=true" --name faap --restart always
 With you auth url (all headers was sent to that url by get response)
 ```
 docker run -d -p 3200:3200 -e "CHECK_AUTH_URL=http://loc/check-auth.php" --name faap --restart always grinat0/faap
-```
-
-### Express extension
-```
-const faap = require('faap')
-
-// see avalaibled options in config.js
-const config = {}
-app.use(faap(config))
 ```
 
 ### Dev
@@ -88,21 +115,6 @@ cd docker/test && docker-compose up --abort-on-container-exit
 Local (need running db)
 
 ```
-npm run-test
+npm run test-inner-auth-enabled
+npm run test-inner-auth-disabled
 ```
-
-## Heroku
-1. Create new app
-2. Fork repo and add to app
-3. Enable metadata support:
-```
-heroku labs:enable runtime-dyno-metadata -a you_app_name
-```
-4. Get free mongodb on https://mlab.com/ and create new db or set you mongo url
-5. Set db config:
-```
-heroku config:set MONGO_URL="mongodb://user:pass@host:port/dbname" -a you_app_name
-```
-6. Set other configs if need via enviroment avalibled in config.js
-7. ???
-8. Profit!

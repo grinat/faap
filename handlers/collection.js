@@ -13,7 +13,7 @@ const collection = {
 
     const data = req.body || {}
     if (!data.id && data._id) {
-      data._id = new objectId(data.id.toString())
+      data._id = new objectId(data._id.toString())
       data.id = data._id
     } else if (data.id && !data._id) {
       data.id = new objectId(data.id.toString())

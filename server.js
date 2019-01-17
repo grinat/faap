@@ -5,15 +5,21 @@ const config = require('./config')
 
 const app = express()
 
-app.use(faap(config))
+function initAndRun(config, callbacks) {
+  app.use(faap(config, callbacks))
 
-app.get('*', function(req, res) {
-  res.redirect(config.BASE_API_PATH + 'docs/swagger')
-})
+  app.get('*', function(req, res) {
+    res.redirect(config.BASE_API_PATH + 'docs/swagger')
+  })
 
-const server = app.listen(config.PORT, function () {
-  console.info(`Server started on http://localhost:${config.PORT} at ${new Date()} in ${process.env.NODE_ENV || 'dev'} mode`)
-})
+  return app.listen(config.PORT, function () {
+    console.info(`Server started on http://localhost:${config.PORT} at ${new Date()} in ${process.env.NODE_ENV || 'dev'} mode`)
+  })
+}
+
+if (process.env.NODE_ENV !== 'testing') {
+  initAndRun(config)
+}
 
 module.exports = app
-module.exports.server = server
+module.exports.initAndRun = initAndRun

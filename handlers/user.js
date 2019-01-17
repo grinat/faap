@@ -112,10 +112,11 @@ const user = {
       throw new HandledError('Not found', 404)
     }
 
-    if (!auth || auth.token !== item.token) {
+    // show token for owners only
+    if (auth.token !== item.token) {
       delete item.token
-      delete item.passHash
     }
+    delete item.passHash
 
     res.send(
       transformers.transformItem(item, collection, req)

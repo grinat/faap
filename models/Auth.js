@@ -4,20 +4,38 @@ const HandledError = require('../models/HandledError')
 const collection = require('../handlers/user').collection
 
 class Auth {
-  constructor ({config, db, req}) {
+
+  constructor ({config, db, req, checkIdentify}) {
     this._config = config
     this._db = db
     this._req = req
+    this._checkIdentify = checkIdentify
     this.token = ''
     this.user = null
     this._identifyChecked = false
   }
 
   async isLoggedUser () {
-    if (this._identifyChecked !== true) {
-      this._authByToken(this._req)
-      await this._findIdentify(this._req)
+    if (this._identifyChecked === true) {
+     return
+    }
+
+    if (this._checkIdentify) {
+      await this._checkCbIdentify(this._req)
       this._identifyChecked = true
+      return
+    }
+
+    this._authByToken(this._req)
+    await this._findIdentify(this._req)
+    this._identifyChecked = true
+  }
+
+  async _checkCbIdentify (req) {
+    try {
+      await this._checkIdentify(req, this._config, this._db)
+    } catch (e) {
+      throw new HandledError('Check cb identify failed', 401)
     }
   }
 
@@ -30,10 +48,14 @@ class Auth {
         throw new HandledError('User identify not found', 401)
       }
     } else if (this._config.CHECK_AUTH_URL) {
-      const {data} = await axios.get(this._config.CHECK_AUTH_URL, {
-        headers: req.headers || {}
-      })
-      this.user = data
+      try {
+        const {data} = await axios.get(this._config.CHECK_AUTH_URL, {
+          headers: req.headers || {}
+        })
+        this.user = data
+      } catch (e) {
+        throw new HandledError('Check identify failed', 401)
+      }
     }
   }
 
