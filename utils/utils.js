@@ -1,4 +1,7 @@
 const md5 = require('md5')
+const mkdirp = require('mkdirp')
+
+const HandledError = require('../models/HandledError')
 
 const utils = {
   getSort: function (query = {}) {
@@ -105,6 +108,27 @@ const utils = {
   },
   getPassHashByPass: function (password, salt = '') {
     return md5(salt + password.toString().trim())
+  },
+  createFolderAndSubfolders: function (path) {
+    return new Promise((resolve, reject) => {
+      mkdirp(path, function (err) {
+        if (err) {
+          reject(err)
+        }
+        resolve(true)
+      })
+    })
+  },
+  createErrWithInvalidFields: function (fields = {}) {
+    const err = new HandledError('Validation failed', 422)
+    err.meta = {fields: {}}
+    for (let fieldName in fields) {
+      let errorMsg = fields[fieldName]
+      if (errorMsg) {
+        err.meta.fields[fieldName] = errorMsg
+      }
+    }
+    return err
   }
 }
 

@@ -2,25 +2,26 @@ const objectId = require('mongodb').ObjectID
 
 const main = require('./main')
 const utils = require('../utils/utils')
-const transformers = require('../utils/transformers')
 const HandledError = require('../models/HandledError')
 
-const collection = 'user'
-
-const user = {
+const userHandlers = {
   register: async function (req, res, injected) {
-    const {config, db} = injected
+    const {config, db, callbacks} = injected
     const data = req.body || {}
+    const collection = config.INNER_AUTH_COLLECTION
 
     const {login, password} = data
     if (!login || !password) {
-      throw new HandledError('login and pass required', 422)
+      throw utils.createErrWithInvalidFields({
+        login: !login ? 'Login required' : null,
+        password: !password ? 'Password required' : null,
+      })
     }
 
     data._id = new objectId()
     data.id = data._id
     data.token = utils.getGeneratedToken()
-    data.passHash = utils.getPassHashByPass(password, config.SALT)
+    data.passHash = utils.getPassHashByPass(password, config.INNER_AUTH_SALT)
     data.login = data.login.toString().trim()
     delete data.password
 
@@ -28,7 +29,9 @@ const user = {
       login: data.login
     })
     if (item) {
-      throw new HandledError('User already registered', 422)
+      throw utils.createErrWithInvalidFields({
+        login: 'User with that login already registered'
+      })
     }
 
     await db.collection(collection).insertOne(data, {
@@ -36,36 +39,45 @@ const user = {
     })
     config.SHOW_DEBUG_MSG && console.debug('Created user with id', data._id.toString())
 
-    res.status(201).send(
-      transformers.transformItem(data, collection, req)
+    res.status(201).send(callbacks.transformItem
+      ? callbacks.transformItem(data, collection, req)
+      : data
     )
   },
   login: async function (req, res, injected) {
-    const {config, db} = injected
+    const {config, db, callbacks} = injected
     const data = req.body || {}
+    const collection = config.INNER_AUTH_COLLECTION
 
     const {login, password} = data
-    const passHash = utils.getPassHashByPass(password, config.SALT)
+    const passHash = utils.getPassHashByPass(password, config.INNER_AUTH_SALT)
 
     const item = await db.collection(collection).findOne({
       login: login.toString().trim(),
       passHash
     })
     if (!item) {
-      throw new HandledError('Wrong login or pass', 422)
+      throw utils.createErrWithInvalidFields({
+        login: 'Wrong login or pass',
+        password: 'Wrong login or pass'
+      })
     }
 
-    res.send(
-      transformers.transformItem(item, collection, req)
+    res.send(callbacks.transformItem
+      ? callbacks.transformItem(item, collection, req)
+      : item
     )
   },
   update:  async function (req, res, injected) {
-    const {config, auth, db} = injected
+    const {config, auth, db, callbacks} = injected
     const {id} = req.params
-
     const data = req.body || {}
+    const collection = config.INNER_AUTH_COLLECTION
+
+    // remove vars, which can broke logic
     delete data._id
     delete data.id
+    // remove portintialy unsdafe vars
     delete data.token
     delete data.passHash
     delete data.login
@@ -83,11 +95,13 @@ const user = {
       throw new HandledError('You cant edit foreign profile', 403)
     }
 
+    // change hashes if password provided
     if (data.password) {
-      data.passHash = utils.getPassHashByPass(data.password, config.SALT)
+      data.passHash = utils.getPassHashByPass(data.password, config.INNER_AUTH_SALT)
       data.token = utils.getGeneratedToken()
       delete data.password
     }
+
     const update = await db.collection(collection).findOneAndUpdate(
       {_id: objectId(id)},
       {$set: data},
@@ -95,13 +109,15 @@ const user = {
     )
     config.SHOW_DEBUG_MSG && console.debug('Updated item with id', update.value._id.toString())
 
-    res.send(
-      transformers.transformItem(update.value, collection, req)
+    res.send(callbacks.transformItem
+      ? callbacks.transformItem(update.value, collection, req)
+      : update.value
     )
   },
   view: async function (req, res, injected) {
-    const {db, auth} = injected
+    const {db, auth, callbacks, config} = injected
     const {id} = req.params
+    const collection = config.INNER_AUTH_COLLECTION
 
     await auth.isLoggedUser()
 
@@ -118,13 +134,15 @@ const user = {
     }
     delete item.passHash
 
-    res.send(
-      transformers.transformItem(item, collection, req)
+    res.send(callbacks.transformItem
+      ? callbacks.transformItem(item, collection, req)
+      : item
     )
   },
   list: async function (req, res, injected) {
-    const {db, auth} = injected
+    const {db, auth, callbacks, config} = injected
     const {sort, mongoSort} = utils.getSort(req.query)
+    const collection = config.INNER_AUTH_COLLECTION
 
     await auth.isLoggedUser()
 
@@ -146,18 +164,17 @@ const user = {
       return u
     })
 
+    let gridData = utils.buildGridData(collection, items, req.query, count)
+
     res.send(
-      transformers.transformList(
-        utils.buildGridData(collection, items, req.query, count),
-        collection,
-        req
-      )
+      callbacks.transformList
+        ? callbacks.transformList(gridData, collection, req)
+        : gridData
     )
   },
-  delete: async function (req, res) {
-    main.handleError(new HandledError('You cant do that', 405), res, req)
+  delete: async function (req, res, {config}) {
+    main.handleError(new HandledError('You cant do that', 405), res, req, config)
   }
 }
 
-module.exports = user
-module.exports.collection = collection
+module.exports = userHandlers

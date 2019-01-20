@@ -1,7 +1,11 @@
+//const BASE_URL = 'http://localhost:3200'
+const BASE_URL = 'https://faap-app.herokuapp.com'
+
 // create axios instanse with base api url
 const http = axios.create({
-  baseURL: 'https://faap-app.herokuapp.com/faap/v1/'
+  baseURL: `${BASE_URL}/faap/v1/`
 })
+
 // notify about requests
 http.interceptors.request.use(function (config) {
   let msg = `${config.method.toUpperCase()} ${config.baseURL}${config.url}`
@@ -183,10 +187,17 @@ const vm = new Vue({
     },
     processImage: async function (evt) {
       try {
-        this.item.photo = await new BrowserImageManipulation()
+        const blob = await new BrowserImageManipulation()
           .loadBlob(evt.target.files[0])
           .toCircle(128, {bgColor: 'rgba(255, 255, 255, 0)'})
-          .saveAsImage('image/png')
+          .saveAsBlob('image/png')
+
+        const formData = new FormData()
+        formData.append('photo', blob)
+
+        const {data} = await http.post('upload/file', formData)
+
+        this.item.photo = `${BASE_URL}${data.photo.relativeUrl}`
       } catch (e) {
         this.$toast.open(e.toString())
       }

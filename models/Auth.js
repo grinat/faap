@@ -1,7 +1,6 @@
 const axios = require('axios')
 
 const HandledError = require('../models/HandledError')
-const collection = require('../handlers/user').collection
 
 class Auth {
 
@@ -40,8 +39,8 @@ class Auth {
   }
 
   async _findIdentify (req) {
-    if (this._config.USE_INNER_AUTH) {
-      this.user = await this._db.collection(collection).findOne({
+    if (this._config.INNER_AUTH_ENABLED) {
+      this.user = await this._db.collection(this._config.INNER_AUTH_COLLECTION).findOne({
         token: this.token
       })
       if (!this.user) {

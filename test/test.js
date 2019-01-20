@@ -1,6 +1,9 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const expect = chai.should()
+const path = require('path')
+const fs = require('fs')
+const expect = chai.expect
+chai.should()
 chai.use(chaiHttp)
 
 const config = require('../config')
@@ -24,17 +27,17 @@ let createdId = null
 let app = null
 let server = null
 
-describe('Test user(if avalaible) and collection', () => {
+describe(`Test user and collection, inner auth ${config.INNER_AUTH_ENABLED ? 'enabled' : 'disabled'}`, () => {
   before(async () => {
     app = require('../server')
     server = require('../server').initAndRun(config)
   })
 
   after(async () => {
-    server.close()
+    await new Promise(resolve => server.close(resolve))
   })
 
-  config.USE_INNER_AUTH && describe('User', () => {
+  config.INNER_AUTH_ENABLED && describe('User', () => {
     it('register user', (done) => {
       chai.request(app)
         .post('/faap/v1/user/register')
@@ -60,7 +63,6 @@ describe('Test user(if avalaible) and collection', () => {
           res.body.should.have.property('login')
           res.body.should.have.property('token')
           token = res.body.token
-          console.log('Token', token)
           done()
         })
     })
@@ -197,4 +199,41 @@ describe('Test user(if avalaible) and collection', () => {
         })
     })
   })
+
+  describe('Upload', () => {
+    it('upload file with wrong mime type', (done) => {
+      chai.request(app)
+        .post('/faap/v1/upload/file')
+        .set('Authorization', token)
+        .attach('foo', path.join(__dirname, 'test.js'), 'test.js')
+        .end((err, res) => {
+          res.should.have.status(422)
+          res.body.should.have.nested.property('_meta.fields.foo')
+          done()
+        })
+    })
+
+    it('upload file', async () => {
+      const testFilePath = path.join(__dirname, 'test.txt')
+
+      fs.writeFileSync(testFilePath, 'Test')
+
+      const res = await chai.request(app)
+        .post('/faap/v1/upload/file')
+        .set('Authorization', token)
+        .attach('bar', testFilePath, 'test.txt')
+
+      res.should.have.status(201)
+      res.body.should.be.a('object')
+      res.body.should.have.nested.property('bar.relativeFilePath')
+
+      const uploadedTo = path.join(config.UPLOADS_DIR, res.body.bar.relativeFilePath)
+
+      expect(fs.existsSync(uploadedTo), 'file uploaded and exist').to.be.true
+
+      fs.unlinkSync(testFilePath)
+      fs.unlinkSync(uploadedTo)
+    })
+  })
+
 })
