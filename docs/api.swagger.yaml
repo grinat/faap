@@ -8,7 +8,9 @@ tags:
 - name: "collection"
   description: "Mongodb operations"
 - name: "user"
-  description: "Inner auth, used if USE_INNER_AUTH option set to true"
+  description: "Inner auth, used if USE_INNER_AUTH option set to true (default: false)"
+- name: "upload"
+  description: "Uploading files, used if ENABLE_UPLOADS option set to true (default: true)"
 paths:
   /{collection}:
     post:
@@ -31,12 +33,12 @@ paths:
         description: "Data that needs to be added to the store"
         required: true
         schema:
-          $ref: "#/definitions/DataToSave"
+          $ref: "#/definitions/ItemForm"
       responses:
-        200:
+        201:
           description: "Success"
           schema:
-            $ref: "#/definitions/SavedData"
+            $ref: "#/definitions/Item"
         401:
           description: "Need auth"
           schema:
@@ -86,7 +88,7 @@ paths:
         200:
           description: "Success"
           schema:
-            $ref: "#/definitions/SavedDatas"
+            $ref: "#/definitions/Items"
         401:
           description: "Need auth"
           schema:
@@ -123,12 +125,12 @@ paths:
         description: "Data that needs to be added to the store"
         required: true
         schema:
-          $ref: "#/definitions/DataToSave"
+          $ref: "#/definitions/ItemForm"
       responses:
         200:
           description: "Success"
           schema:
-            $ref: "#/definitions/SavedData"
+            $ref: "#/definitions/Item"
         401:
           description: "Need auth"
           schema:
@@ -196,7 +198,7 @@ paths:
         200:
           description: "Success"
           schema:
-            $ref: "#/definitions/SavedData"
+            $ref: "#/definitions/Item"
         404:
           description: "Not found"
           schema:
@@ -226,16 +228,16 @@ paths:
         in: "body"
         required: true
         schema:
-          $ref: "#/definitions/UserReg"
+          $ref: "#/definitions/UserRegForm"
       responses:
-        200:
+        201:
           description: "Success"
           schema:
             $ref: "#/definitions/User"
         422:
           description: "Wrong Validation"
           schema:
-            $ref: "#/definitions/Error"
+            $ref: "#/definitions/ErrorValidation"
         500:
           description: "Error"
           schema:
@@ -255,7 +257,7 @@ paths:
         in: "body"
         required: true
         schema:
-          $ref: "#/definitions/UserAuth"
+          $ref: "#/definitions/UserAuthForm"
       responses:
         200:
           description: "Success"
@@ -264,7 +266,7 @@ paths:
         422:
           description: "Wrong login or pass"
           schema:
-            $ref: "#/definitions/Error"
+            $ref: "#/definitions/ErrorValidation"
         500:
           description: "Error"
           schema:
@@ -289,7 +291,7 @@ paths:
         in: "body"
         required: true
         schema:
-          $ref: "#/definitions/UserEdit"
+          $ref: "#/definitions/UserEditForm"
       responses:
         200:
           description: "Success"
@@ -370,7 +372,7 @@ paths:
         200:
           description: "Success"
           schema:
-            $ref: "#/definitions/SavedDatas"
+            $ref: "#/definitions/Items"
         401:
           description: "Need auth"
           schema:
@@ -381,6 +383,60 @@ paths:
             $ref: "#/definitions/Error"
       security:
       - api_key: []
+  /upload/file:
+    post:
+      tags:
+      - "upload"
+      summary: "Uploading file"
+      description: "You can upload any count of files"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "formData"
+        name: "image"
+        type: "file"
+      - in: "formData"
+        name: "otherFile"
+        type: "file"
+      responses:
+        201:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/UploadedItems"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: "Declined file ext, size"
+          schema:
+            $ref: "#/definitions/ErrorValidation"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - api_key: []
+  /uploads/{pathToFile}:
+    get:
+      tags:
+      - "upload"
+      summary: "Show file"
+      description: ""
+      produces:
+      - "application/octet-stream"
+      parameters:
+      - name: "pathToFile"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+        404:
+          description: "Not found"
 
 securityDefinitions:
   api_key:
@@ -390,13 +446,13 @@ securityDefinitions:
 
 
 definitions:
-  DataToSave:
+  ItemForm:
     type: "object"
     properties:
       any:
         description: "Any saved field or fields"
         type: "string"
-  SavedData:
+  Item:
     type: "object"
     properties:
       id:
@@ -409,13 +465,13 @@ definitions:
       any:
         description: "Any saved field or fields"
         type: "string"
-  SavedDatas:
+  Items:
     type: "object"
     properties:
       data:
         type: "array"
         items:
-          $ref: "#/definitions/SavedData"
+          $ref: "#/definitions/Item"
       _meta:
         type: "object"
       _links:
@@ -442,6 +498,22 @@ definitions:
         type: "integer"
       message:
         type: "string"
+  ErrorValidation:
+    type: "object"
+    properties:
+      status:
+        type: "integer"
+      message:
+        type: "string"
+      _meta:
+        type: "object"
+        properties:
+          fieldName:
+            type: "string"
+            description: "Wrong validate field msg"
+          otherFieldName:
+            type: "string"
+            description: "Wrong validate field msg"
   User:
     type: "object"
     properties:
@@ -458,14 +530,14 @@ definitions:
       any:
         description: "Any saved field or fields"
         type: "string"
-  UserAuth:
+  UserAuthForm:
     type: "object"
     properties:
       login:
         type: "string"
       password:
         type: "string"
-  UserReg:
+  UserRegForm:
     type: "object"
     properties:
       login:
@@ -475,7 +547,7 @@ definitions:
       any:
         description: "Any field or fields needed to store"
         type: "string"
-  UserEdit:
+  UserEditForm:
     type: "object"
     properties:
       password:
@@ -484,3 +556,27 @@ definitions:
       any:
         description: "Any field or fields needed to store"
         type: "string"
+  UploadedFile:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      mimetype:
+        type: "string"
+      fileName:
+        type: "string"
+      fileMd5:
+        type: "string"
+      relativeFilePath:
+        type: "string"
+      relativeUrl:
+        type: "string"
+  UploadedItems:
+    type: "object"
+    properties:
+      file1:
+        type: "object"
+        $ref: "#/definitions/UploadedFile"
+      file2:
+        type: "object"
+        $ref: "#/definitions/UploadedFile"

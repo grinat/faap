@@ -1,7 +1,7 @@
 {
   "name": "faap",
   "description": "Fast Api for Any Prototype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Gabdrashitov Rinat <paladin2012gnu@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -13,19 +13,21 @@
     "url": "git+https://github.com/grinat/faap.git"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV.ENABLE_SWAGGER_UI=true nodemon server.js",
-    "dev-inner-auth-enabled": "cross-env NODE_ENV.USE_INNER_AUTH=true npm dev",
+    "dev": "cross-env NODE_ENV.SWAGGER_UI_ENABLED=true nodemon server.js",
+    "dev-inner-auth-enabled": "cross-env NODE_ENV.INNER_AUTH_ENABLED=true npm dev",
     "start": "cross-env NODE_ENV=production node server.js",
-    "test": "cross-env NODE_ENV=testing mocha --timeout 10000",
-    "test-inner-auth-enabled": "cross-env NODE_ENV.USE_INNER_AUTH=true npm run test",
-    "test-inner-auth-disabled": "cross-env NODE_ENV.USE_INNER_AUTH=false npm run test"
+    "test": "npm run test-inner-auth-enabled && npm run test-inner-auth-disabled",
+    "test-inner-auth-enabled": "cross-env NODE_ENV.INNER_AUTH_ENABLED=true NODE_ENV=testing mocha --timeout 10000 --bail",
+    "test-inner-auth-disabled": "cross-env NODE_ENV.INNER_AUTH_ENABLED=false NODE_ENV=testing mocha --timeout 10000 --bail"
   },
   "dependencies": {
     "axios": "^0.17.1",
     "cors": "^2.8.4",
     "cross-env": "^5.1.4",
     "express": "^4.14.0",
+    "express-fileupload": "^1.1.1-alpha.1",
     "md5": "^2.2.1",
+    "mkdirp": "^0.5.1",
     "mongodb": "^2.2.22",
     "swagger-ui-express": "^4.0.1",
     "uuid": "^3.3.2",

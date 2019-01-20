@@ -1,17 +1,17 @@
 const objectId = require('mongodb').ObjectID
 
 const utils = require('../utils/utils')
-const transformers = require('../utils/transformers')
 const HandledError = require('../models/HandledError')
 
-const collection = {
+const collectionHandlers = {
   create: async function (req, res, injected) {
     const {collection} = req.params
-    const {config, db, auth} = injected
+    const {config, db, auth, callbacks} = injected
 
     await auth.isLoggedUser()
 
     const data = req.body || {}
+    // for compatibility with front which is configured to work with id
     if (!data.id && data._id) {
       data._id = new objectId(data._id.toString())
       data.id = data._id
@@ -28,19 +28,22 @@ const collection = {
     })
     config.SHOW_DEBUG_MSG && console.debug('Created item with id', data._id.toString())
 
-    res.status(201).send(
-      transformers.transformItem(data, collection, req)
+    res.status(201).send(callbacks.transformItem
+      ? callbacks.transformItem(data, collection, req)
+      : data
     )
   },
   update: async function (req, res, injected) {
     const {collection, id} = req.params
-    const {config, db, auth} = injected
+    const {config, db, auth, callbacks} = injected
 
     await auth.isLoggedUser()
 
     const data = req.body || {}
+    // remove vars, which can broke logic
     delete data._id
     delete data.id
+
     const item = await db.collection(collection).findOne({
       _id: objectId(id)
     })
@@ -55,8 +58,9 @@ const collection = {
     )
     config.SHOW_DEBUG_MSG && console.debug('Updated item with id', update.value._id.toString())
 
-    res.send(
-      transformers.transformItem(update.value, collection, req)
+    res.send(callbacks.transformItem
+      ? callbacks.transformItem(update.value, collection, req)
+      : update.value
     )
   },
   delete: async function (req, res, injected) {
@@ -81,7 +85,7 @@ const collection = {
   },
   viewItems: async function (req, res, injected) {
     const {collection} = req.params
-    const {db, auth} = injected
+    const {db, auth, callbacks} = injected
     let {sort, mongoSort} = utils.getSort(req.query)
 
     await auth.isLoggedUser()
@@ -99,17 +103,17 @@ const collection = {
       .limit(+perPage)
       .toArray()
 
+    let gridData = utils.buildGridData(collection, items, req.query, count)
+
     res.send(
-      transformers.transformList(
-        utils.buildGridData(collection, items, req.query, count),
-        collection,
-        req
-      )
+      callbacks.transformList
+        ? callbacks.transformList(gridData, collection, req)
+        : gridData
     )
   },
   viewItem: async function (req, res, injected) {
     const {collection, id} = req.params
-    const {db, auth} = injected
+    const {db, auth, callbacks} = injected
 
     await auth.isLoggedUser()
 
@@ -120,8 +124,11 @@ const collection = {
       throw new HandledError('Not found', 404)
     }
 
-    res.send(transformers.transformItem(item, collection, req))
+    res.send(callbacks.transformItem
+      ? callbacks.transformItem(item, collection, req)
+      : item
+    )
   }
 }
 
-module.exports = collection
+module.exports = collectionHandlers
