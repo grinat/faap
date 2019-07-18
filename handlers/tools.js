@@ -38,8 +38,18 @@ const toolsHandlers = {
       }
 
       for (let fName in fakerFake) {
-        item[fName] = faker.fake(fakerFake[fName])
-        item.searchBody += ` ${item[fName]} `
+        let fakeData = faker.fake(fakerFake[fName])
+        item.searchBody += ` ${fakeData} `
+
+        if (fakeData === 'true' || fakeData === 'false') {
+          // cast bool string to boolean
+          fakeData = (fakeData === 'true')
+        } else if (isNaN(fakeData) === false) {
+          // cast string to number
+          fakeData = +fakeData
+        }
+
+        item[fName] = fakeData
       }
 
       items.push(item)
