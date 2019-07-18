@@ -8,7 +8,7 @@ class Auth {
     this._config = config
     this._db = db
     this._req = req
-    this._checkIdentify = checkIdentify
+    this._checkIdentifyByCallback = checkIdentify
     this.token = ''
     this.user = null
     this._identifyChecked = false
@@ -19,27 +19,23 @@ class Auth {
      return
     }
 
-    if (this._checkIdentify) {
-      await this._checkCbIdentify(this._req)
+    if (this._checkIdentifyByCallback) {
+      try {
+        await this._checkIdentifyByCallback(this._req, this._config, this._db)
+      } catch (e) {
+        throw new HandledError('Check identify callback failed', 401)
+      }
       this._identifyChecked = true
       return
     }
 
-    this._authByToken(this._req)
     await this._findIdentify(this._req)
     this._identifyChecked = true
   }
 
-  async _checkCbIdentify (req) {
-    try {
-      await this._checkIdentify(req, this._config, this._db)
-    } catch (e) {
-      throw new HandledError('Check cb identify failed', 401)
-    }
-  }
-
   async _findIdentify (req) {
     if (this._config.INNER_AUTH_ENABLED) {
+      this._findAuthTokenInHeader(this._req)
       this.user = await this._db.collection(this._config.INNER_AUTH_COLLECTION).findOne({
         token: this.token
       })
@@ -58,7 +54,7 @@ class Auth {
     }
   }
 
-  _authByToken (req) {
+  _findAuthTokenInHeader (req) {
     this.token = ''
     if (req.headers.authorization) {
       if (req.headers.authorization.indexOf('Bearer') > -1) {
