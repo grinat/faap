@@ -1,5 +1,5 @@
 # faap
-[![Travis CI status](https://api.travis-ci.org/grinat/faap.svg?branch=master)](https://travis-ci.org/grinat/faap)
+[![Travis CI status](https://api.travis-ci.org/grinat/faap.svg?branch=master)](https://travis-ci.org/grinat/faap) [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/grinat/faap)
 
 Fast Api for Any Prototype (like postgrest, but you don't need create schema manually)
 
@@ -94,10 +94,7 @@ app.use(faap(config, callbacks))
 ```
 
 ## Heroku
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/grinat/faap)
-
-Or
-
+Use deploy button or:
 1. Create new app
 2. Fork repo and add to app
 3. Enable metadata support:
