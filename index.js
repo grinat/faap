@@ -8,6 +8,7 @@ const collection = require('./handlers/collection')
 const user = require('./handlers/user')
 const upload = require('./handlers/upload')
 const decorators = require('./utils/decorators')
+const tools = require('./handlers/tools')
 
 const defaultConfig = {
   // for example: 'mongodb://localhost:27017/test'
@@ -39,7 +40,10 @@ const defaultConfig = {
   // for example: path.join(__dirname, 'uploads')
   UPLOADS_DIR: null,
   UPLOADS_ACCEPTED_MIMES: ['image/png', 'image/jpeg', 'image/pjpeg', 'image/gif', 'text/plain'],
-  UPLOADS_SIZE_LIMIT: 4 * 1024 * 1024
+  UPLOADS_SIZE_LIMIT: 4 * 1024 * 1024,
+
+  // enable tools for admin collections (truncate, gen fake data and etc)
+  ENABLE_TOOLS: false
 }
 
 /**
@@ -96,6 +100,13 @@ module.exports = function (opts = {}, callbacks = {}) {
     router.put(config.BASE_API_PATH + 'upload/file', jsonParser, decorators.injectParamsForHandlers(upload.file, params))
     // static files
     router.use(config.BASE_API_PATH + 'uploads', express.static(config.UPLOADS_DIR))
+  }
+
+  // tools
+  if (config.ENABLE_TOOLS === true) {
+    router.get(config.BASE_API_PATH + 'tools/list-collections', decorators.injectParamsForHandlers(tools.listCollections, params))
+    router.post(config.BASE_API_PATH + 'tools/generate-fake-data/:collection', jsonParser, decorators.injectParamsForHandlers(tools.generateFakeData, params))
+    router.delete(config.BASE_API_PATH + 'tools/truncate/:collection', decorators.injectParamsForHandlers(tools.truncate, params))
   }
 
   // collection

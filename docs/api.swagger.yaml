@@ -5,35 +5,37 @@ info:
   title: ""
 basePath: "/faap/v1/"
 tags:
-- name: "collection"
-  description: "Mongodb operations"
-- name: "user"
-  description: "Inner auth, used if USE_INNER_AUTH option set to true (default: false)"
-- name: "upload"
-  description: "Uploading files, used if ENABLE_UPLOADS option set to true (default: true)"
+  - name: "collection"
+    description: "Mongodb operations"
+  - name: "user"
+    description: "Inner auth, used if USE_INNER_AUTH option set to true (default: false)"
+  - name: "upload"
+    description: "Uploading files, used if ENABLE_UPLOADS option set to true (default: true)"
+  - name: "tools"
+    description: "used if ENABLE_TOOLS option set to true (default: false)"
 paths:
   /{collection}:
     post:
       tags:
-      - "collection"
+        - "collection"
       summary: "Insert data to collection"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "collection"
-        in: "path"
-        required: true
-        description: "Name of collection"
-        type: "string"
-      - name: "body"
-        in: "body"
-        description: "Data that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/ItemForm"
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Data that needs to be added to the store"
+          required: true
+          schema:
+            $ref: "#/definitions/ItemForm"
       responses:
         201:
           description: "Success"
@@ -48,42 +50,42 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
     get:
       tags:
-      - "collection"
+        - "collection"
       summary: "Get saved data's from collection as list"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "collection"
-        in: "path"
-        required: true
-        description: "Name of collection"
-        type: "string"
-      - name: "sort"
-        in: "query"
-        description: "Sorted field name, -fieldName descending, fieldName ascending"
-        type: "string"
-      - name: "per-page"
-        in: "query"
-        description: "items on page"
-        type: "string"
-      - name: "page"
-        in: "query"
-        description: "pagination page"
-        type: "string"
-      - name: "q"
-        in: "query"
-        description: "insensitive search in searchBody field"
-        type: "string"
-      - name: "filter"
-        in: "query"
-        type: "string"
-        description: "See filter model"
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+        - name: "sort"
+          in: "query"
+          description: "Sorted field name, -fieldName descending, fieldName ascending"
+          type: "string"
+        - name: "per-page"
+          in: "query"
+          description: "items on page"
+          type: "string"
+        - name: "page"
+          in: "query"
+          description: "pagination page"
+          type: "string"
+        - name: "q"
+          in: "query"
+          description: "insensitive search in searchBody field"
+          type: "string"
+        - name: "filter"
+          in: "query"
+          type: "string"
+          description: "See filter model"
       responses:
         200:
           description: "Success"
@@ -98,34 +100,34 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
   /{collection}/{id}:
     patch:
       tags:
-      - "collection"
+        - "collection"
       summary: "Update data in collection"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "collection"
-        in: "path"
-        required: true
-        description: "Name of collection"
-        type: "string"
-      - name: "id"
-        in: "path"
-        required: true
-        description: "Id of data"
-        type: "string"
-      - name: "body"
-        in: "body"
-        description: "Data that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/ItemForm"
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Id of data"
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Data that needs to be added to the store"
+          required: true
+          schema:
+            $ref: "#/definitions/ItemForm"
       responses:
         200:
           description: "Success"
@@ -140,27 +142,27 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
     delete:
       tags:
-      - "collection"
+        - "collection"
       summary: "Delete data in collection"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "collection"
-        in: "path"
-        required: true
-        description: "Name of collection"
-        type: "string"
-      - name: "id"
-        in: "path"
-        required: true
-        description: "Id of data"
-        type: "string"
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Id of data"
+          type: "string"
       responses:
         200:
           description: "Success"
@@ -173,27 +175,27 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
     get:
       tags:
-      - "collection"
+        - "collection"
       summary: "Get data from collection"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "collection"
-        in: "path"
-        required: true
-        description: "Name of collection"
-        type: "string"
-      - name: "id"
-        in: "path"
-        required: true
-        description: "Id of data"
-        type: "string"
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Id of data"
+          type: "string"
       responses:
         200:
           description: "Success"
@@ -212,23 +214,23 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
   /user/register:
     post:
       tags:
-      - "user"
+        - "user"
       summary: "Create new user"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "body"
-        in: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/UserRegForm"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserRegForm"
       responses:
         201:
           description: "Success"
@@ -245,19 +247,19 @@ paths:
   /user/login:
     post:
       tags:
-      - "user"
+        - "user"
       summary: "Login"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "body"
-        in: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/UserAuthForm"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserAuthForm"
       responses:
         200:
           description: "Success"
@@ -274,24 +276,24 @@ paths:
   /user/{id}:
     patch:
       tags:
-      - "user"
+        - "user"
       summary: "Update user profile"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        description: "Id of user"
-        type: "string"
-      - name: "body"
-        in: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/UserEditForm"
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Id of user"
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserEditForm"
       responses:
         200:
           description: "Success"
@@ -306,22 +308,22 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
     get:
       tags:
-      - "user"
+        - "user"
       summary: "View user profile"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        description: "Id of user"
-        type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Id of user"
+          type: "string"
       responses:
         200:
           description: "Success"
@@ -336,38 +338,38 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
   /user:
     get:
       tags:
-      - "user"
+        - "user"
       summary: "Get saved data's from user as list"
       description: ""
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "sort"
-        in: "query"
-        description: "Sorted field name, -fieldName descending, fieldName ascending"
-        type: "string"
-      - name: "per-page"
-        in: "query"
-        description: "items on page"
-        type: "string"
-      - name: "page"
-        in: "query"
-        description: "pagination page"
-        type: "string"
-      - name: "q"
-        in: "query"
-        description: "insensitive search in searchBody field"
-        type: "string"
-      - name: "filter"
-        in: "query"
-        type: "string"
-        description: "See filter model"
+        - name: "sort"
+          in: "query"
+          description: "Sorted field name, -fieldName descending, fieldName ascending"
+          type: "string"
+        - name: "per-page"
+          in: "query"
+          description: "items on page"
+          type: "string"
+        - name: "page"
+          in: "query"
+          description: "pagination page"
+          type: "string"
+        - name: "q"
+          in: "query"
+          description: "insensitive search in searchBody field"
+          type: "string"
+        - name: "filter"
+          in: "query"
+          type: "string"
+          description: "See filter model"
       responses:
         200:
           description: "Success"
@@ -382,24 +384,24 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
   /upload/file:
     post:
       tags:
-      - "upload"
+        - "upload"
       summary: "Uploading file"
       description: "You can upload any count of files"
       consumes:
-      - "multipart/form-data"
+        - "multipart/form-data"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - in: "formData"
-        name: "image"
-        type: "file"
-      - in: "formData"
-        name: "otherFile"
-        type: "file"
+        - in: "formData"
+          name: "image"
+          type: "file"
+        - in: "formData"
+          name: "otherFile"
+          type: "file"
       responses:
         201:
           description: "Success"
@@ -418,25 +420,112 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-      - api_key: []
+        - api_key: []
   /uploads/{pathToFile}:
     get:
       tags:
-      - "upload"
+        - "upload"
       summary: "Show file"
       description: ""
       produces:
-      - "application/octet-stream"
+        - "application/octet-stream"
       parameters:
-      - name: "pathToFile"
-        in: "path"
-        required: true
-        type: "string"
+        - name: "pathToFile"
+          in: "path"
+          required: true
+          type: "string"
       responses:
         200:
           description: "Success"
         404:
           description: "Not found"
+
+  /tools/list-collections:
+    get:
+      tags:
+        - "tools"
+      summary: "Retrieve information about the collections and views in a database"
+      description: ""
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Items"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+        - api_key: []
+  /tools/generate-fake-data/{collection}:
+    post:
+      tags:
+        - "tools"
+      summary: ""
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/GenerateFakeDataForm"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Items"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+        - api_key: []
+  /tools/truncate/{collection}:
+    delete:
+      tags:
+        - "tools"
+      summary: ""
+      description: ""
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "collection"
+          in: "path"
+          required: true
+          description: "Name of collection"
+          type: "string"
+      responses:
+        204:
+          description: "Success"
+        401:
+          description: "Need auth"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+        - api_key: []
 
 securityDefinitions:
   api_key:
@@ -580,3 +669,29 @@ definitions:
       file2:
         type: "object"
         $ref: "#/definitions/UploadedFile"
+  GenerateFakeDataForm:
+    type: "object"
+    properties:
+      count:
+        description: "Count of created collections"
+        type: "number"
+        example: 1
+      faker.fake:
+        $ref: "#/definitions/FakerFake"
+  FakerFake:
+    type: "object"
+    properties:
+      title:
+        description: "in value set template for Faker.fake(), more: https://github.com/marak/Faker.js/#fakerfake"
+        type: "string"
+        example: "{{commerce.productName}} {{commerce.productMaterial}}"
+      body:
+        type: "string"
+        example: "{{lorem.paragraphs}}"
+      creation_date:
+        type: "string"
+        example: "{{date.past}}"
+      is_important:
+        type: "string"
+        example: "{{random.boolean}}"
+

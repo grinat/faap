@@ -236,4 +236,56 @@ describe(`Test user and collection, inner auth ${config.INNER_AUTH_ENABLED ? 'en
     })
   })
 
+  describe('Tools', () => {
+    it('list of collections', (done) => {
+      chai.request(app)
+        .get('/faap/v1/tools/list-collections')
+        .set('Authorization', token)
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.body.should.be.a('object')
+          res.body.should.have.property('data')
+          res.body.should.have.property('_meta')
+          res.body.data.should.be.a('array')
+          res.body.should.to.have.nested.property('data[0].name')
+          done()
+        })
+    })
+
+    it('generate-fake-data', (done) => {
+      chai.request(app)
+        .post('/faap/v1/tools/generate-fake-data/fake-collection')
+        .set('Authorization', token)
+        .send({
+          "count": 2,
+          "faker.fake": {
+            "title": "{{commerce.productName}} {{commerce.productMaterial}}",
+            "body": "{{lorem.paragraphs}}",
+            "creation_date": "{{date.past}}",
+            "is_important": "{{random.boolean}}"
+          }
+        })
+        .end((err, res) => {
+          res.should.have.status(201)
+          res.body.should.be.a('object')
+          res.body.should.have.property('data')
+          res.body.should.have.property('_meta')
+          res.body.data.should.be.a('array')
+          res.body.should.to.have.nested.property('data[0].title')
+          res.body.should.to.have.nested.property('data[0].body')
+          done()
+        })
+    })
+
+    it('truncate', (done) => {
+      chai.request(app)
+        .delete('/faap/v1/tools/truncate/fake-collection')
+        .set('Authorization', token)
+        .end((err, res) => {
+          res.should.have.status(204)
+          done()
+        })
+    })
+  })
+
 })

@@ -1,11 +1,13 @@
 # faap
 [![Travis CI status](https://api.travis-ci.org/grinat/faap.svg?branch=master)](https://travis-ci.org/grinat/faap)
 
-Fast Api for Any Prototype
+Fast Api for Any Prototype (like postgrest, but you don't need create schema manually)
 
 Allows via rest api add, edit, sort, filter any arbitrary data sets. What is convenient when creating demos and prototypes, since there is no need to write server api, models, migrations, etc.
 
 There is a built-in authorization by token, or you can connect to an existing one.
+
+Included data generation tool.
 
 ## Example
 
@@ -67,7 +69,10 @@ const config = {
   // for example: path.join(__dirname, 'uploads')
   UPLOADS_DIR: null,
   UPLOADS_ACCEPTED_MIMES: ['image/png', 'image/jpeg', 'image/pjpeg', 'image/gif', 'text/plain'],
-  UPLOADS_SIZE_LIMIT: 4 * 1024 * 1024
+  UPLOADS_SIZE_LIMIT: 4 * 1024 * 1024,
+  
+  // enable tools for admin collections (truncate, gen fake data and etc)
+  ENABLE_TOOLS: false
 }
 
 // optional, set you auth and db
