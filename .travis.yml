@@ -12,4 +12,4 @@ jobs:
   - stage: Publish in npm
     if: branch = master
     script:
-      - sh ./scripts/publish-in-npm || travis_terminate 1
+      - sh ./scripts/publish-in-npm.sh || travis_terminate 1

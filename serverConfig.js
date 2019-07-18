@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {
   PORT: process.env.PORT || 3200,
-  MONGO_URL: process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://localhost:3201/faap',
+  MONGO_URL: process.env.MONGO_URL || process.env.MONGODB_URI || 'mongodb://localhost:3201/faap',
   CHECK_AUTH_URL: process.env.CHECK_AUTH_URL || null,
   INNER_AUTH_ENABLED: process.env.INNER_AUTH_ENABLED === "true",
   SHOW_DEBUG_MSG: process.env.SHOW_DEBUG_MSG === "true" || false,
