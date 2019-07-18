@@ -2,10 +2,10 @@ const swaggerUi = require('swagger-ui-express')
 const YAML = require('yamljs')
 const path = require('path')
 
-const pkg = require('../package')
+const pkg = require('../../package')
 
 function init (config, router) {
-  const swaggerDocument = YAML.load(path.join(__dirname, '..', 'docs/api.swagger.yaml'))
+  const swaggerDocument = YAML.load(path.join(__dirname, '../../docs/api.swagger.yaml'))
   swaggerDocument.info.version = pkg.version
   swaggerDocument.info.title = pkg.name
   swaggerDocument.info.description = pkg.description

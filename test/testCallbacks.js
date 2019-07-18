@@ -5,7 +5,7 @@ chai.use(chaiHttp)
 
 const mongoClient = require('mongodb').MongoClient
 
-const config = require('../config')
+const config = require('../serverConfig')
 
 let isLogged = true
 let mongoUrl = config.MONGO_URL

@@ -1,0 +1,12 @@
+{
+  "name": "faap",
+  "description": "Fast Api for Any Prototype",
+  "repository": "https://github.com/grinat/faap",
+  "addons": ["mongolab"],
+  "env": {
+    "INNER_AUTH_ENABLED": "false",
+    "ENABLE_TOOLS": "true",
+    "SWAGGER_UI_ENABLED:": "true"
+  },
+  "success_url": "/"
+}

@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-const HandledError = require('../models/HandledError')
+const HandledError = require('./HandledError')
 
 class Auth {
 

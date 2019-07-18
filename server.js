@@ -1,7 +1,7 @@
 const express = require('express')
-const faap = require('./index')
+const faap = require('./src')
 
-const config = require('./config')
+const config = require('./serverConfig')
 
 const app = express()
 

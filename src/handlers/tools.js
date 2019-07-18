@@ -1,6 +1,5 @@
 const objectId = require('mongodb').ObjectID
 const utils = require('../utils/utils')
-const HandledError = require('../models/HandledError')
 const faker = require('faker')
 
 const toolsHandlers = {

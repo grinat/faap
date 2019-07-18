@@ -30,7 +30,8 @@ const faap = require('faap')
 
 app.use(faap({
    MONGO_URL: 'mongodb://localhost:27017/test',
-   SWAGGER_UI_ENABLED: true
+   SWAGGER_UI_ENABLED: true,
+   ENABLE_TOOLS: true
 }))
 ```
 
@@ -93,6 +94,10 @@ app.use(faap(config, callbacks))
 ```
 
 ## Heroku
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/grinat/faap)
+
+Or
+
 1. Create new app
 2. Fork repo and add to app
 3. Enable metadata support:
@@ -104,7 +109,7 @@ heroku labs:enable runtime-dyno-metadata -a you_app_name
 ```
 heroku config:set MONGO_URL="mongodb://user:pass@host:port/dbname" -a you_app_name
 ```
-6. Set other configs if need via enviroment avalibled in config.js
+6. Set other configs if need via enviroment avalibled in serverConfig.js
 ```
 // enabling swager ui
 heroku config:set SWAGGER_UI_ENABLED=true -a you_app_name

@@ -6,7 +6,7 @@ const expect = chai.expect
 chai.should()
 chai.use(chaiHttp)
 
-const config = require('../config')
+const config = require('../serverConfig')
 
 const user = {
   login: +new Date(),
