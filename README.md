@@ -26,10 +26,15 @@ Remote
 ### Express extension
 Simple usage:
 ```
+const path = require('fs')
 const faap = require('faap')
+
+const app = express()
 
 app.use(faap({
    MONGO_URL: 'mongodb://localhost:27017/test',
+   UPLOADS_ENABLED: true,
+   UPLOADS_DIR: path.join(__dirname, 'uploads'),
    SWAGGER_UI_ENABLED: true,
    ENABLE_TOOLS: true
 }))
@@ -38,6 +43,8 @@ app.use(faap({
 Advanced usage:
 ```
 const faap = require('faap')
+
+const app = express()
 
 // optional, below are the default values
 const config = {

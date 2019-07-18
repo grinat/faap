@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const router = express.Router()
+const fs = require('fs')
 
 const collection = require('./handlers/collection')
 const user = require('./handlers/user')
@@ -35,7 +36,7 @@ const defaultConfig = {
   SWAGGER_UI_ENABLED: false,
 
   // enable upload files
-  UPLOADS_ENABLED: true,
+  UPLOADS_ENABLED: false,
   // where saved uploaded files
   // for example: path.join(__dirname, 'uploads')
   UPLOADS_DIR: null,
@@ -98,8 +99,14 @@ module.exports = function (opts = {}, callbacks = {}) {
   if (config.UPLOADS_ENABLED === true) {
     router.post(config.BASE_API_PATH + 'upload/file', jsonParser, decorators.injectParamsForHandlers(upload.file, params))
     router.put(config.BASE_API_PATH + 'upload/file', jsonParser, decorators.injectParamsForHandlers(upload.file, params))
-    // static files
-    router.use(config.BASE_API_PATH + 'uploads', express.static(config.UPLOADS_DIR))
+
+    // static files dir
+    const path = config.UPLOADS_DIR
+    if (fs.existsSync(path) === false) {
+      throw new Error(`UPLOADS_DIR=${path} not found`)
+    }
+
+    router.use(config.BASE_API_PATH + 'uploads', express.static(path))
   }
 
   // tools

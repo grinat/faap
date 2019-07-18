@@ -1,7 +1,7 @@
 {
   "name": "faap",
   "description": "Fast Api for Any Prototype",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Gabdrashitov Rinat <paladin2012gnu@gmail.com>",
   "license": "MIT",
   "bugs": {

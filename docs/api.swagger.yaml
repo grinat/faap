@@ -10,7 +10,7 @@ tags:
   - name: "user"
     description: "Inner auth, used if USE_INNER_AUTH option set to true (default: false)"
   - name: "upload"
-    description: "Uploading files, used if ENABLE_UPLOADS option set to true (default: true)"
+    description: "Uploading files, used if ENABLE_UPLOADS option set to true (default: false)"
   - name: "tools"
     description: "used if ENABLE_TOOLS option set to true (default: false)"
 paths:
