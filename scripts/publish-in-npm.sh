@@ -1,5 +1,5 @@
 #!/bin/sh
 
-npm whoami
+npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
 
 npm run publish
