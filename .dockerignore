@@ -7,7 +7,7 @@ yarn-error.log
 .vers/
 .plugins/
 .need/
-uploads/
+uploads/*
 
 selenium-debug.log
 

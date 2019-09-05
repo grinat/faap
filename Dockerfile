@@ -13,14 +13,15 @@ RUN apt-get install -y nodejs
 RUN apt-get purge --auto-remove -y \
     && rm -rf /var/lib/apt/lists/*
 
+COPY package.json package-lock.json /home/faap/
+RUN cd /home/faap/ && npm i
+
 # copy project files
 COPY ./ /home/faap
 RUN chmod +x /home/faap/docker/supervisord/entrypoint.sh
 
-# install npm depencies
-RUN cd /home/faap && npm i
-
 ENV MONGO_URL="mongodb://localhost:27017/faap"
+ENV SWAGGER_UI_ENABLED="true"
 
 EXPOSE 3200
 
