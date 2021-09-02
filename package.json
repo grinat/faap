@@ -22,7 +22,7 @@
     "test-inner-auth-disabled": "cross-env NODE_ENV.ENABLE_TOOLS=true NODE_ENV.INNER_AUTH_ENABLED=false NODE_ENV=testing mocha --timeout 10000 --bail"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "cors": "^2.8.4",
     "cross-env": "^5.1.4",
     "express": "^4.14.0",
